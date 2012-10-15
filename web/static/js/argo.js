@@ -180,30 +180,3 @@
 //     });
 
 // }
-
-$(document).ready(function(){
-    if($('#board-head-bookbtn')){
-        $('#board-head-bookbtn').popover({
-            "animation": true,
-            "html": true,
-            "placement": "top",
-            "trigger": 'click',
-            "delay": { show: 500, hide: 1500 },
-            "content": function(){
-                boardname = $('#board-head-bookbtn').attr('data-boardname');
-                $.ajax({
-                    type: "GET",
-                    url: "/a/book_board/" + boardname,
-                    dataType: "json",
-                    success : function(data){
-                        $('#wait').html('<p class="' + (data['success']?'success':'failed') + '">' + data['content'] + '</p>');
-                        setTimeout(function(){
-                            $('#wait').remove();
-                            $('#board-head-bookbtn').popover('hide');
-                        }, 2500);
-                    }});                        
-                return '<div id="wait"><img src="/static/img/wait.gif"/></div>';
-            },
-        })
-    }
-})

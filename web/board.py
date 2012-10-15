@@ -36,6 +36,50 @@ class BoardHandler(BaseHandler):
                      posts=posts, vistors=vistors, isfav=isfav,
                      page_size=self.page_size)
 
+class APIQueryBoardHandler(BaseHandler):
+
+    page_size = 20
+    get_posts = manager.post.get_posts
+
+    def get(self, boardname):
+        res = manager.board.name_and_id(boardname)
+        if res is None:
+            self.fail(u'没有该版块')
+            return
+        boardname = res.boardname
+        bid = res.bid
+        start = self.get_argument('start', None)
+        if start is None or not start.isdigit():
+            self.write({
+                    "success": False,
+                    "content": u'没有指定或错误的开始文章序号',
+                    })
+            return
+        start = int(start)
+        posts = self.get_posts(bid, start, self.page_size)
+        for p in posts:
+            p['posttime'] = p.posttime.isoformat()
+        userid = self.get_current_user()
+        if userid :
+            manager.readmark.wrapper_post_with_readmark(posts,
+                                                        boardname, userid)
+        self.write({
+                'success': True,
+                'content': posts,
+                })
+
+class APIQueryGPostBoardHandler(APIQueryBoardHandler):
+
+    get_posts = manager.post.get_posts_g
+
+class APIQueryMPostBoardHandler(APIQueryBoardHandler):
+
+    get_posts = manager.post.get_posts_m
+
+class APIQueryTPostBoardHandler(APIQueryBoardHandler):
+
+    get_posts = manager.post.get_posts_topic
+
 class AjaxBookBoardHandler(BaseHandler):
 
     def get(self, boardname):

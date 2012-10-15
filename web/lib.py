@@ -37,8 +37,16 @@ def url_for_avatar(userid):
     '''
     return manager.userinfo.get_avatar(userid) or "/static/img/avatar_default.jpg"
 
+def shorttime(time):
+    '''
+    Better and short outlook for time.
+    '''
+    return time.strftime('%d-%m')
+
+
 func = SDict([
     ("url_for_avatar", url_for_avatar),
+    ('shorttime', shorttime),
     ])
 
 class BaseHandler(tornado.web.RequestHandler):
@@ -105,12 +113,6 @@ def timeformat(time):
     Better outlook for time.
     '''
     return time.strftime("%d-%m")
-
-def shorttime(time):
-    '''
-    Better and short outlook for time.
-    '''
-    return time.strftime('%d-%m')
 
 def fun_gen_quote(userid, content):
     '''

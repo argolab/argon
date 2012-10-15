@@ -274,6 +274,11 @@ class Board(Model):
         d = self.table_select_by_key(self.__, 'boardname', 'bid', bid)
         return d and d['boardname']
 
+    def name_and_id(self, boardname):
+        return self.db.get("SELECT boardname, bid "
+                             "FROM %s WHERE boardname=%%s" % self.__,
+                             boardname)
+
     def update_attr_plus1(self,bid,key):
         return self.db.execute("UPDATE %s SET %s = %s +1 WHERE bid = %%s" % \
                                    (self.__, key, key),

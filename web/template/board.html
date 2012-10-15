@@ -1,88 +1,244 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html >
+  <head>
+    <meta charset="utf-8">
+    <title>逸仙时空 Yat-sen Channel</title>
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <link href="/static/css/argo.css" rel="stylesheet">
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+    <script src="/static/js/lib/jquery.js"></script>
+    <script src="/static/js/lib/bootstrap.js"></script>
+    <script src="/static/js/argo.js"></script>
+    <script src="/static/js/jquery-tmpl.js"></script>
+    <script src="/static/js/nice-time.js"></script>
+  </head>
+  <body class="board-{{ board.boardname }}" data-boardname="{{ board.boardname }}">
+    <div class="g-container">
 
-{% block main %}
-<div id="main">
-  <div class="cell-group">
-    <div class="btn-toolbar">
-	  <a href="/post/add/{{ board.boardname }}" class="btn btn-small btn-success">发表主题</a>
-	  <button class="btn btn-small">同主题</button>
-      <div class="btn-group">
-        <a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">
-          过滤器
-          <span class="caret"></span>
-        </a>
-        <ul class="dropdown-menu">
-          <li><a>只读精华</a></li>
-          <li><a>只读美文</a></li>
-        </ul>
+      <div class="navbar">
+        <div class="navbar-inner">
+          <a class="brand" href="#">逸仙时空</a>
+          <div class="userbox pull-right">
+            <ul class="nav">
+              <li><a href="/user/">LTaoist</a></li>
+              <li><a href="/mail"><i class="icon-envelope"></i></a></li>
+              <li><a href="#"><i class="icon-bell"></i></a></li>            
+              <li><a href="#"><i class="icon-user"></i></a></li>            
+            </ul>
+          </div>
+          <div id="fixed-nav">
+            <ul id="fav" class="unstyled">
+              <li><i class="icon-home"></i> <a href="/">首页</a></li>
+              <li><a href="/board/Say/">Say</a></li>
+            </ul>
+            <a id="admin-book-link" href="/board/Say/">管理收藏夹</a>
+          </div>
+        </div>
       </div>
+
+      <div id="main">
+        <div id="board-head" class="row-fluid">
+          <div id="board-head-inner">
+            <h1>{{ board.description }} <small>{{ board.boardname }}</small></h1>
+          </div>
+        </div>
+        <div id="board-body">
+          <div id="board-body-inner" class="row-fluid">
+            <div id="primary" class="span9">
+              <div id="input-submit-title">
+                <form class="form-inline">
+                  <input type="text" class="input-xlarge"
+                         placeholder="说点什么..."/>
+                  <button type="submit"
+                          class="btn btn-small btn-success">发表话题</button>
+                  <div id="board-hint">
+                    有问题？<a href="#"> 写信给版主 </a> 或者 <a href="#"> 寻找帮助 </a>
+                  </div>
+                </form>
+              </div>
+              <div id="board-list">
+                <ul id="board-list-nav" class="nav nav-tabs">
+                  <li id="set-default-loader"><a>讨论</a></li>
+                  <li id="set-t-loader" ><a>主题</a></li>
+                  <li id="set-g-loader" ><a>文摘</a></li>
+                  <li id="set-m-loader"><a>美文</a></li>
+                </ul>
+                <div id="board-content">
+                  <table id="board-content-inner">
+                    <tbody id="postlist-container">
+                      {% for li in posts %}
+                      {% end %}
+                    </tbody>
+                  </table>
+                  <ul id="boardlist-nav">
+                    <li><a id="go-first" href="#board-list"> |< </a></li>
+                    <li><a id="go-prev"  href="#board-list"> << </a></li>
+                    <li><a id="go-next"  href="#board-list"> >> </a></li>
+                    <li><a id="go-last"  href="#board-list"> >| </a></li>
+                  </ul>                    
+                </div>
+              </div>
+            </div>
+
+            <div id="second" class="span3">
+
+              <div id="second-inner">
+
+                <div class="widget">
+                  <h4>版块介绍</h4>
+                  <div class="widget-content">                  
+                    Linux 是一系列类 Unix 计算机操作系统的统称。
+                    该操作系统的核心为 Linux 内核。
+                    Linux 操作系统也是软件和开放源代码发展中最著名的例子。
+                    <div class="pull-right">
+                      <a href="#" class="btn btn-mini btn-info">收藏该版</a>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="widget">
+                  <h4>版主公告</h4>
+                  <div class="widget-content">
+                    <ul class="unstyled">
+                      <li><a href="#">今天版聚</a>[2012-5-6]</li>
+                      <li><a href="#">发帖必读</a>[2012-5-6]</li>
+                      <li><a href="#">版友需知</a>[2012-5-6]</li>
+                    </ul>
+                  </div>
+                </div>
+
+              </div>
+              
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer id="footer">
+        &copy Life is originally a tragedy.
+      </footer>
     </div>
-    {% module PostTable(posts) %}
-    <div class="pagination pagination-centered">
-      <ul>
-        {% if rank != 0 %}        
-        <li><a href="/board/{{ board.boardname }}/{{ rank - page_size }}">上一页</a></li>
-        {% else %}
-        <li class="disabled"><a>上一页</a></li>
-        {% end %}
-        <li class="active"><a>第 {{ rank//page_size + 1 }} 页</a></li>
-        {% if (rank + page_size) <= maxrank %}        
-        <li><a href="/board/{{ board.boardname }}/{{ rank + page_size }}">下一页</a></li>
-        {% else %}
-        <li class="disabled"><a>下一页</a></li>
-        {% end %}
-      </ul>
-    </div>
-  </div>
-</div>
-{% end %}
 
-{% block pagehead %}
-<div id="board-head" class="cell">
-  <div id="board-head-intro" class="intro">
-    <h1>{{ board['boardname'] }}</h1>
-    <p>{{ board['about'] }}</p>
-  </div>
-  <img class="img-rounded" src="{{ board['httpbg'] }}"/>
-  {% if isfav is False %}
-  <a id="board-head-bookbtn" data-boardname="{{ board['boardname'] }}" class="btn btn-mini pull-right btn-info">收藏该版</a>
-  {% end %}
-</div>
-{% end %}
+    <script id="post-item-tpl" type="text/x-jquery-tmpl">
+      <tr>
+        <td class="tb-img">
+          <img src="/avatar/${owner}" />
+        </td>
+        <td class="tb-user">
+          <a href="/user/${owner}">${owner}</a>
+        </td>
+        <td class="tb-title">
+          <i class="${ (typeof read !='undefined')&&(read)?'read':'unread' }"></i>
+          <a href="/post/${pid}">${title}</a>
+        </td>
+        <td class="tb-time">
+          <time>${posttime}</time>
+        </td> 
+      </tr>
+    </script>
 
-{% block rightsidebar %}
-{% if board['bm'] %}
-<div class="cell">
-  <h4>版主</h4>
-  <ul class="userset userset-small unstyled">
-    {% for p in board.bm %}
-    <li>
-      <img src="{{ func.url_for_avatar(p) }}"/>
-      <div>
-        <a href="/user/{{ p }}">{{ p }}</a>
-      </div>
-    </li>
-    {% end %}
-  </ul>
-</div>
-{% else %}
-<div class="alert">
-  <strong>诚征版主中!</strong><br/>
-  如果你有爱，愿意参与本版的建设，符合参选版主的规定，请考虑申请版主！
-</div>
-{% end %}
+    <script type="text/javascript">
 
-<div class="cell">
-  <h4>最近访客</h4>
-  <ul class="userset userset-small unstyled">
-    {% for p, t in vistors %}
-    <li>
-      <img src="{{ func.url_for_avatar(p) }}"/>
-      <div>
-        <a href="/user/{{ p }}">{{ p }}</a>
-      </div>
-    </li>
-    {% end %}
-  </ul>
-</div>
-{% end %}
+      var g_tabler;
+      var g_pagesize = 20
+
+      function g_after_reload(){
+          $('time').nicetime();
+      }
+
+      function new_tabler(container, tpl, success){
+          return {
+              container : container,
+              tpl : tpl,
+              start : 0,
+              setter : function(data){
+                  container.empty();
+                  tpl.tmpl(data).appendTo(container);
+                  success(data);
+              },
+              loader : null,
+          }
+      }
+
+      function g_load_and_set(tabler, start){
+          tabler.loader(start, function(data){
+              if((data.success)&&(data.content.length)){
+                  tabler.start = start;
+                  tabler.setter(data.content);
+              }
+              else{
+                  if(data.content.length){
+                      tabler.container.text(data.content);
+                  }
+                  else{
+                      tabler.container.text('没有数据！');
+                  }
+              }
+          });
+      }
+
+      function g_set_loader(tabler, loader){
+          tabler.loader = loader;
+      }
+
+      $(document).ready(function(){
+
+          var boardname = $("body").attr('data-boardname');
+
+          function get_url_loader(url){
+              return function(start, callback){
+                  $.get(url,
+                        {
+                            start: start,
+                        },
+                        callback);
+              }
+          }
+
+          default_loader = get_url_loader('/api/get_posts/' + boardname);
+          g_loader = get_url_loader('/api/get_posts_g/' + boardname);
+          m_loader = get_url_loader('/api/get_posts_m/' + boardname);
+          t_loader = get_url_loader('/api/get_posts_t/' + boardname);
+
+          g_tabler = new_tabler($("#postlist-container"),
+                                $("#post-item-tpl"),
+                                g_after_reload);
+
+          $("#go-prev").click(function(){
+              alert(g_tabler.start-g_pagesize);
+              g_load_and_set(g_tabler, g_tabler.start-g_pagesize);
+          });
+
+          $("#go-next").click(function(){
+              alert(g_tabler.start+g_pagesize);
+              g_load_and_set(g_tabler, g_tabler.start+g_pagesize);
+          });
+          
+          $("#go-first").click(function(){
+              g_load_and_set(g_tabler, 0);
+          });
+
+          function bind_clicker(selector, loader, tabler){
+              $(selector).click(function(){
+                  if($(selector).hasClass("active"))
+                      return ;
+                  $("#board-list-nav>li").removeClass("active");
+                  $(selector).addClass("active");
+                  g_set_loader(tabler, loader);
+                  g_load_and_set(tabler, 0);
+              });
+          }
+
+          bind_clicker("#set-default-loader", default_loader, g_tabler);
+          bind_clicker("#set-t-loader", t_loader, g_tabler);
+          bind_clicker("#set-g-loader", g_loader, g_tabler);
+          bind_clicker("#set-m-loader", m_loader, g_tabler);
+
+          $("#set-default-loader").click();
+
+      });
+
+    </script>
+
+  </body>
+</html>

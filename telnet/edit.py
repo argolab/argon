@@ -422,6 +422,8 @@ class EditFileFrame(BaseEditFrame):
     def initialize(self, filename, text=u'', l=0):
         self.cls()
         self._filename = filename
+        if text is None:
+            text = u'';
         self.setup(text=text, spoint=l)
 
     def setup(self, text, spoint):

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+  <div class="span8 offset1">
+    <div class="userinfo-box">
+      <div class="userinfo-profile">
+        <!-- <img src="/static/img/bgt.jpg"/>         -->
+        <h2>{{ user.userid }} ({{ user.nickname }})</h2>
+        <p>
+          登录：<em>{{ user.numlogins }}</em>次，发文：<em>{{ user.numposts }}</em>篇，<br/>
+          上次更新：<em>{{ user.lastupdate }}</em>
+        </p>
+      </div>
+      <div class="userinfo-text">
+        <div>
+          {% raw escape(user.about).replace('\n', '<br/>\n') %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% end %}

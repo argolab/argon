@@ -10,3 +10,9 @@ class NoticeHandler(BaseHandler):
         # manager.notify.clear_notice_notify(userid)
         notices = manager.notice.get_notice(userid, 0 , 10)
         self.srender('notify.html', notices=notices, total=total)
+
+class UserInfoHandler(BaseHandler):
+
+    def get(self, userid):
+        user = manager.userinfo.get_user(userid)
+        self.srender('user.html', user=user)
