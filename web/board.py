@@ -6,7 +6,7 @@ from lib import BaseHandler, manager
 
 class BoardHandler(BaseHandler):
 
-    page_size = 30
+    page_size = 15
 
     def get(self, boardname, rank=None):
         board = manager.board.get_board(boardname)
@@ -38,7 +38,7 @@ class BoardHandler(BaseHandler):
 
 class APIQueryBoardHandler(BaseHandler):
 
-    page_size = 20
+    page_size = 15
     get_posts = manager.post.get_posts
 
     def get(self, boardname):
@@ -82,7 +82,7 @@ class APIQueryTPostBoardHandler(APIQueryBoardHandler):
 
 class AjaxBookBoardHandler(BaseHandler):
 
-    def get(self, boardname):
+    def get(self):
         userid = self.get_current_user()
         if userid is None:
             self.write({
@@ -90,7 +90,10 @@ class AjaxBookBoardHandler(BaseHandler):
                     "content": u"未登录用户.",
                     })
             return
-        board = manager.board.get_board(boardname)
+        boardname = self.get_argument('boardname', None)
+        print '(**', boardname
+        board = boardname and boardname.isalpha() and \
+            manager.board.get_board(boardname)
         if not board :
             self.write({
                     "success": False,

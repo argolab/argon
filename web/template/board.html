@@ -63,6 +63,7 @@
                   <li id="set-g-loader" ><a>文摘</a></li>
                   <li id="set-m-loader"><a>美文</a></li>
                 </ul>
+                <p id="post-counter"></p>
                 <div id="board-content">
                   <table id="board-content-inner">
                     <tbody id="postlist-container">
@@ -71,10 +72,10 @@
                     </tbody>
                   </table>
                   <ul id="boardlist-nav">
-                    <li><a id="go-first" href="#board-list"> |< </a></li>
-                    <li><a id="go-prev"  href="#board-list"> << </a></li>
-                    <li><a id="go-next"  href="#board-list"> >> </a></li>
-                    <li><a id="go-last"  href="#board-list"> >| </a></li>
+                    <li id="go-first"><i class="arrow-up-bar"></i></li>
+                    <li id="go-prev"><i class="arrow-up"></i></li>
+                    <li id="go-next"><i class="arrow-down"></i></li>
+                    <li id="go-last"><i class="arrow-down-bar"></i></li>
                   </ul>                    
                 </div>
               </div>
@@ -91,7 +92,7 @@
                     该操作系统的核心为 Linux 内核。
                     Linux 操作系统也是软件和开放源代码发展中最著名的例子。
                     <div class="pull-right">
-                      <a href="#" class="btn btn-mini btn-info">收藏该版</a>
+                      <button class="book-btn btn btn-mini btn-info">收藏该版</button>
                     </div>
                   </div>
                 </div>
@@ -140,31 +141,51 @@
     <script type="text/javascript">
 
       var g_tabler;
-      var g_pagesize = 20
+      var g_pagesize = 15;
+      var g_length;
 
-      function g_after_reload(){
-          $('time').nicetime();
-      }
-
-      function new_tabler(container, tpl, success){
+      function new_tabler(container, tpl){
           return {
               container : container,
               tpl : tpl,
               start : 0,
-              setter : function(data){
-                  container.empty();
-                  tpl.tmpl(data).appendTo(container);
-                  success(data);
-              },
               loader : null,
           }
+      }
+
+      function set_tabler(tabler, start, data){
+          tabler.start = start;
+          tabler.container.empty();
+          tabler.tpl.tmpl(data).appendTo(tabler.container);
+          g_length = data.length
+          /* */
+          $('#post-counter').text(start+1);
+          $('time').nicetime();
       }
 
       function g_load_and_set(tabler, start){
           tabler.loader(start, function(data){
               if((data.success)&&(data.content.length)){
-                  tabler.start = start;
-                  tabler.setter(data.content);
+                  set_tabler(tabler, start, data.content);
+              }
+              else{
+                  if(data.content.length){
+                      show_alert(data.content);
+                  }
+                  else{
+                      show_alert('没有数据！');
+                  }
+              }                      
+          });
+      }
+
+      var last;
+
+      function g_init_table(tabler, start){
+          tabler.loader(start, function(data){
+              if((data.success)&&(data.content.length)){
+                  last=data;
+                  set_tabler(tabler, start, data.content);
               }
               else{
                   if(data.content.length){
@@ -175,7 +196,7 @@
                   }
               }
           });
-      }
+      }                        
 
       function g_set_loader(tabler, loader){
           tabler.loader = loader;
@@ -201,21 +222,34 @@
           t_loader = get_url_loader('/api/get_posts_t/' + boardname);
 
           g_tabler = new_tabler($("#postlist-container"),
-                                $("#post-item-tpl"),
-                                g_after_reload);
+                                $("#post-item-tpl"));
 
           $("#go-prev").click(function(){
-              alert(g_tabler.start-g_pagesize);
-              g_load_and_set(g_tabler, g_tabler.start-g_pagesize);
+              if(g_tabler.start<g_pagesize){
+                  show_alert('已经是第一页');
+              }
+              else{
+                  g_load_and_set(g_tabler, g_tabler.start-g_pagesize);
+              }
           });
 
           $("#go-next").click(function(){
-              alert(g_tabler.start+g_pagesize);
-              g_load_and_set(g_tabler, g_tabler.start+g_pagesize);
+              if(g_length!=g_pagesize){
+                  show_alert('刷新本页中!');
+                  g_load_and_set(g_tabler, g_tabler.start);
+              }
+              else{
+                  g_load_and_set(g_tabler, g_tabler.start+g_pagesize);
+              }              
           });
           
           $("#go-first").click(function(){
-              g_load_and_set(g_tabler, 0);
+              if(g_tabler.start==0){
+                  show_alert('已经是第一页了！');
+              }
+              else{
+                  g_load_and_set(g_tabler, 0);
+              }
           });
 
           function bind_clicker(selector, loader, tabler){
@@ -225,7 +259,7 @@
                   $("#board-list-nav>li").removeClass("active");
                   $(selector).addClass("active");
                   g_set_loader(tabler, loader);
-                  g_load_and_set(tabler, 0);
+                  g_init_table(tabler, 0);
               });
           }
 
@@ -237,6 +271,37 @@
           $("#set-default-loader").click();
 
       });
+
+      function show_alert(messsage, type){
+          if($('#message').length)
+              return;
+          var tag = $('<div id="message">');
+          tag.html(messsage);
+          if(type){
+              tag.addClass('message-' + type);
+          }
+          tag.appendTo('body');
+          setTimeout(function(){
+              tag.fadeIn(1200, function(){
+                  tag.remove();
+              });
+          }, 1000);              
+      }
+
+      $(".book-btn").click(function(){
+          $.get("/api/book_board",
+                {
+                    boardname: $("body").attr('data-boardname'),
+                },
+                function(data){
+                    if(data.success){
+                        show_alert(data.content, "success");
+                    }
+                    else{
+                        show_alert(data.content, "danger");
+                    }
+                });
+      });                    
 
     </script>
 

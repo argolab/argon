@@ -39,13 +39,12 @@ urls = [
     (r'/api/get_posts_g/(\w{2,16})', import_handler('board', 'APIQueryGPostBoardHandler')),
     (r'/api/get_posts_m/(\w{2,16})', import_handler('board', 'APIQueryMPostBoardHandler')),
     (r'/api/get_posts_t/(\w{2,16})', import_handler('board', 'APIQueryTPostBoardHandler')),
-
+    (r'/api/book_board', import_handler("board", "AjaxBookBoardHandler")),
 
     (r'/a/get_maillist/(\d{1,4})?', import_handler('mail','AjaxMailListHandler')),
     (r'/a/get_mail/(\d{1,4})', import_handler('mail', 'AjaxGetMailHandler')),
     (r'/a/add_mail', import_handler('mail', 'AjaxAddMailHandler')),
     (r'/a/reply_mail/(\d{1,4})', import_handler('mail', 'AjaxReplyMailHandler')),
-    (r"/a/book_board/(\w{2,16})", import_handler("board", "AjaxBookBoardHandler")),
     
     (r"/a/checkmail/?", import_handler("comm_ajax","CommAjaxCheckMailHandler")),
     (r"/a/mail/(\d{1,10})/?", import_handler("comm_ajax","CommAjaxGetMailHandler")),
@@ -53,7 +52,8 @@ urls = [
     (r"/a/(\w{2,16})/(\d{1,10})/?", import_handler("comm_ajax","CommAjaxGetPostHandler")),
     (r"/a/(\w{2,16})/quote/(\d{1,10})/?", import_handler("comm_ajax","CommAjaxGetQuoteHandler")),
     (r"/a/(\w{2,16})/post/?", import_handler("comm_ajax", "CommAjaxNewPostHandler")),
-    
+    (r"/avatar/(\w{2,16})", import_handler("user", "UserAvatarHandler"),
+     { "path": os.path.join(os.path.dirname(__file__), "attach") }),
 
     # mobile
     (r"/m/?$", import_handler("mobile.m_main","MobileIndexHandler")),

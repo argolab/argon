@@ -89,6 +89,9 @@ class BaseHandler(tornado.web.RequestHandler):
                     "message": httplib.responses[status_code],
                     })
 
+class BaseFileHandler(BaseHandler, tornado.web.StaticFileHandler):
+    pass
+
 def import_handler(modulename, classname):
     '''
     Import a class from the module, and return it.

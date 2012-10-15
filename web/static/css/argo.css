@@ -221,3 +221,127 @@ i.unread{
     color:#777;
     font-size:12px;
 }
+
+#board-content{
+    position:relative;
+    min-height:566px;
+}
+
+#boardlist-nav{
+    position:absolute;
+    height:100%;
+    top:0;
+    right:-10px;
+    background:#f0f0f0;
+    width:10px;
+    list-style-type:none;
+}
+
+#boardlist-nav li{
+    box-shadow:0 0 2px #bbb;
+    position:relative;
+    cursor: pointer;
+}
+
+#boardlist-nav li:hover{
+    background:#f8f8f8;
+}
+
+#boardlist-nav a{
+    display: block;
+    visibility :hidden;
+}
+
+#go-first{
+    height:5%;
+}
+
+#go-prev{
+    height:45%;
+}
+
+#go-next{
+    height:45%;
+}
+
+#go-last{
+    height:5%;
+}
+
+#post-counter{
+    position:absolute;
+    top:1em;
+    right:0;
+    z-index:2;
+    color:#287;
+    font-size:12px;
+}
+
+#post-counter:before{
+    content:"第";
+}
+
+#post-counter:after{
+    content:"篇帖子开始";
+}
+
+#board-list{
+    position:relative;
+}
+
+#boardlist-nav i{
+    height:12px;
+    width:8px;
+    display:inline-block;
+    position:absolute;
+    top:50%;
+    margin:-6px auto auto 1px;
+}    
+
+.arrow-up-bar{
+    background-image:url("../img/arrow-up-bar.gif");
+}
+
+.arrow-down-bar{
+    background-image:url("../img/arrow-down-bar.gif");
+}
+.arrow-up{
+    background-image:url("../img/arrow-up.gif");
+}
+.arrow-down{
+    background-image:url("../img/arrow-down.gif");
+}
+
+#message{
+    position:fixed;
+    top:38%;
+    left:50%;
+    width:100px;
+    padding:1em 2em;
+    text-align:center;
+    margin-left:-50px;
+    border-radius:5px;
+    background-color: #d9edf7;
+    box-shadow:0 2px 2px #ccc;
+    color: #3a87ad;
+    border: 1px solid #bce8f1;
+    opacity:.61;
+}
+
+.message-success{   
+    background-color: #dff0d8 !important;
+    border-color: #d6e9c6 !important;
+    color: #468847 !important;
+}
+
+.message-danger{
+    background-color: #f2dede !important;
+    border-color: #eed3d7 !important;
+    color: #b94a48 !important;
+}
+
+.message-wranning{
+    border-color:#fbeed5 !important;
+    background-color: #fcf8e3 !important;
+    color: #c09853 !important;
+}

@@ -1,4 +1,5 @@
-from lib import BaseHandler, manager
+import os
+from lib import BaseHandler, BaseFileHandler, manager
 
 class NoticeHandler(BaseHandler):
 
@@ -16,3 +17,14 @@ class UserInfoHandler(BaseHandler):
     def get(self, userid):
         user = manager.userinfo.get_user(userid)
         self.srender('user.html', user=user)
+
+class UserAvatarHandler(BaseFileHandler):
+
+    def head(self, userid):
+        super(UserAvatarHandler, self).head('/avatar/%s'%userid)
+
+    def get(self, userid, include_body=True):
+        print '*' * 20
+        print os.path.join(self.root, 'avatar/%s'%userid)
+        super(UserAvatarHandler, self).get('avatar/%s'%userid, include_body)
+
