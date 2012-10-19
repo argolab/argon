@@ -6,10 +6,6 @@ sys.path.append('..')
 
 from argo_conf import *
 
-
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 '''
    argon.web.lib
    ~~~~~~~~~~~~~
@@ -56,6 +52,14 @@ class BaseHandler(tornado.web.RequestHandler):
     @property
     def headers(self):
         return self.application.headers
+
+    @property
+    def userid(self):
+        return self.get_secure_cookie('userid')
+
+    def prepare(self):
+        self.escape = tornado.escape
+        self.remote_ip = self.request.remote_ip
 
     def get_current_user(self):
         return self.get_secure_cookie('userid')
@@ -119,17 +123,15 @@ def fun_gen_quote(userid, content):
     max_quote_line = 5
 
     owner = mgr.userinfo.get_user(userid)
-    if not owner: owner['userid'] = owner['nickname'] = 'null' 
+    if not owner: owner['userid'] = owner['username'] = 'null' 
 
     pattern = u'\n\n【 在 %s ( %s ) 的大作中提到: 】' % \
-                ( owner['userid'], owner['nickname'] )
+                ( owner['userid'], owner['username'] )
 
     quote = pattern + '\n' + '\n'.join(map(lambda l: u'：'+l, content.split('\n')[:max_quote_line]))
 
     return quote
 
-#!/usr/bin/python2
-# -*- coding: utf-8 -*-
 
 import tornado
 import tornado.web
@@ -160,7 +162,7 @@ class LoginHandler(BaseHandler):
             self.write(e.message)
             self.finish()
         else:
-            print repr(userid)
+            #print repr(userid)
             self.set_secure_cookie('userid', userid)
         self.redirect('/')
 

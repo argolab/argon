@@ -101,7 +101,7 @@ struct fileheader {
 	unsigned int flag;
 	unsigned int size;
 	unsigned int id;  			// identity of article (per thread)
-	time_t filetime;
+	unsigned int filetime;
 	char reserved[12];
 };
 
@@ -109,11 +109,11 @@ struct boardheader {
 	char filename[BFNAMELEN];
 	char title[BTITLELEN];
 	char BM[BMLEN];
-	unsigned flag;		/* 版面属性 */
-	unsigned level;		/* read/post权限 */
-	unsigned lastpost;	/* lastpost time */
-	unsigned total; 	/* 文章数 */
-	unsigned parent;	/* parent board ID */
+	unsigned int flag;		/* 版面属性 */
+	unsigned int level;		/* read/post权限 */
+	unsigned int lastpost;	/* lastpost time */
+	unsigned int total; 	/* 文章数 */
+	unsigned int parent;	/* parent board ID */
 	unsigned int total_today;
 	unsigned char reserved[4];
 };

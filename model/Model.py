@@ -1309,7 +1309,7 @@ class UserAuth(Model):
 
     using mod:  userinfo, status, userperm
     '''
-
+    ENC_LEVEL = 10
     ban_userid = ['guest','new']
     GUEST = AuthUser(userid='guest',is_first_login=None)
 
@@ -1321,30 +1321,34 @@ class UserAuth(Model):
         self.favourite = manager.get_module('favourite')
         self.team = manager.get_module('team')
 
-    def gen_passwd(self, userid, passwd):
+    def gen_passwd(self, userid, passwd, code = bcrypt.gensalt(ENC_LEVEL)):
         '''
-        This algorithm derived from the pass.c in the old argo source code.
+        Use the algorithm derived from the pass.c in the old argo source code.
         First hash the plain passwd to the hexdigest of md5 which is the
         same format as in the .PASSWDS using the algorithm below.
         Then use bcrypt to encrypt the hexdigest of md5 code.
         '''
 
         magic = " #r3:`>/CH'M&p%<xCj?bqd=/?L7o:N.s;j}Ouo!--PhX j^icU3aX{]?7`<(jOt"
-        code = hashlib.md5(magic)
-        code.update(passwd)
-        code.update(magic)
-        code.update(userid)
-        digest = code.hexdigest()
-        digest[0] = '\0'
-        return bcrypt.hashpw(digest, bcrypt.gensalt(10))
+        md5code = hashlib.md5(magic)
+        md5code.update(passwd)
+        md5code.update(magic)
+        md5code.update(userid)
+        digest = md5code.hexdigest()
+
+        # The first byte is 0. So the first two char of hexdigest will be 0 as well.
+        digest = '00' + digest[2:]
+
+        return bcrypt.hashpw(digest, code)
 
     def set_passwd(self, userid, passwd):
         self.userinfo.update_user(userid, passwd=self.gen_passwd(userid, passwd))
 
     def check_passwd_match(self, userid, passwd,code):
         try:
-            return gen_passwd(userid, passwd) == code
-        except:
+            return self.gen_passwd(userid, passwd, code) == code
+        except Exception as e:
+            print e
             return False
 
     def user_exists(self,userid):
@@ -1370,7 +1374,7 @@ class UserAuth(Model):
             )
         self.favourite.init_user_favourite(userid)
         self.userperm.init_user_team(userid)
-        
+
     def get_guest(self):
         return self.GUEST
 

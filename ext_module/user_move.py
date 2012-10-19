@@ -18,14 +18,14 @@ def ts2dt(ts):
 def ignore_except(fun):
     try:
         return fun()
-    except Exception, e:
+    except:
         return None
 
 def main_process():
     recfile = 'PASSWDS'
     num = -1
     fail_cnt = 0
-    fp = open('fail.lst', 'w') 
+    fp = open('fail.lst', 'w')
     while True:
         num += 1
         try:

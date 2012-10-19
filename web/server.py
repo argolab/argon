@@ -15,7 +15,7 @@ import uimodules
 class Application(tornado.web.Application):
 
     def __init__(self, handlers, **settings):
-        '''Simply bind bd and ch to the application.'''
+        '''Simply bind db and ch to the application.'''
         tornado.web.Application.__init__(self, handlers, **settings)
         # set db and cache here
         self.db = globaldb.global_conn
@@ -39,14 +39,14 @@ urls = [
     (r'/a/add_mail', import_handler('mail', 'AjaxAddMailHandler')),
     (r'/a/reply_mail/(\d{1,4})', import_handler('mail', 'AjaxReplyMailHandler')),
     (r"/a/book_board/(\w{2,16})", import_handler("board", "AjaxBookBoardHandler")),
-    
+
     (r"/a/checkmail/?", import_handler("comm_ajax","CommAjaxCheckMailHandler")),
     (r"/a/mail/(\d{1,10})/?", import_handler("comm_ajax","CommAjaxGetMailHandler")),
     (r"/a/board/(\d{1,2})/?", import_handler("comm_ajax","CommAjaxGetBoardHandler")),
     (r"/a/(\w{2,16})/(\d{1,10})/?", import_handler("comm_ajax","CommAjaxGetPostHandler")),
     (r"/a/(\w{2,16})/quote/(\d{1,10})/?", import_handler("comm_ajax","CommAjaxGetQuoteHandler")),
     (r"/a/(\w{2,16})/post/?", import_handler("comm_ajax", "CommAjaxNewPostHandler")),
-    
+
 
     # mobile
     (r"/m/?$", import_handler("mobile.m_main","MobileIndexHandler")),
@@ -72,7 +72,7 @@ urls = [
 settings = dict (
     template_path=os.path.join(os.path.dirname(__file__), "template"),
     static_path=os.path.join(os.path.dirname(__file__), "static"),
-    # xsrf_cookies=True,
+    #xsrf_cookies=True,
     cookie_secret="11oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o/Vo=",
     autoescape='xhtml_escape',
     ui_modules=uimodules,
