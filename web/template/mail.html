@@ -1,13 +1,12 @@
 {% extends "base.html" %}
 
-{% block content %}
-
-<div class="row">
-  <div class="span7">
+{% block main %}
+<div class="row-fluid">
+  <div class="span6 offset1">
     <div id="mail-wrapper">
     </div>
   </div>
-  <div class="span3">
+  <div class="span4">
     <div class="cell">
       <div class="btn-toolbar">
         <a href="#add-mail" data-toggle="modal" id="send-new-mail" class="btn btn-small btn-success">写信</a>
@@ -20,13 +19,9 @@
     </div>
   </div>
 </div>
-
-<div class="modal" style="display: none" id="add-mail" aria-hidden="true">
-</div>
-
 {% end %}
 
-{% block scripthead %}
+{% block header %}
 <script src="/static/js/jquery-tmpl.js"></script>
 {% end %}
 

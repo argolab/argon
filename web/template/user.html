@@ -1,8 +1,50 @@
 {% extends "base.html" %}
 
-{% block content %}
-<div class="row">
-  <div class="span8 offset1">
+{% block header %}
+<script src="/static/js/telnet.js"></script>
+{% end %}
+
+{% block main %}
+<div id="user-page-wrapper" class="row-fluid">
+  <div class="user-info span3 offset1">
+    <img src="/avatar/{{ user.userid }}" />
+    <h2>123456789012 (一二三四五六七八九)</h2>
+    <div>
+      发文 {{ user.numposts }} 篇
+    </div>
+    <hr/>
+    <div>
+      <button class="btn btn-mini btn-warning"> 写信问候 </button>
+    </div>
+  </div>
+  <div class="user-text span7">
+    <div class="format-telnet">{{ user.about }}</div>
+    {% if user.job %}
+    <h3>职业</h3>
+    <div class="format-telnet">{{ user.job }}</div>
+    {% end %}
+    {% if user.contact %}
+    <h3>联系方式</h3>
+    <div class="format-telnet">{{ user.contact }}</div>
+    {% end %}
+    {% if user.marriage %}
+    <h3>感情状况</h3>
+    <div class="format-telnet">{{ user.marriage }}</div>
+    {% end %}
+  </div>
+</div>
+{% end %}
+
+{% block script %}
+<script>
+    $(document).ready(function(){
+        $('.format-telnet').telnet();
+    });
+</script>
+{% end %}
+    
+
+  
     <div class="userinfo-box">
       <div class="userinfo-profile">
         <!-- <img src="/static/img/bgt.jpg"/>         -->
@@ -19,5 +61,3 @@
       </div>
     </div>
   </div>
-</div>
-{% end %}

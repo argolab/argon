@@ -128,7 +128,11 @@ def fun_gen_quote(userid, content):
     max_quote_line = 5
 
     owner = mgr.userinfo.get_user(userid)
-    if not owner: owner['userid'] = owner['username'] = 'null' 
+    print '************************'
+    print owner
+    if not owner:
+        owner = {}
+        owner['userid'] = owner['username'] = 'null' 
 
     pattern = u'\n\n【 在 %s ( %s ) 的大作中提到: 】' % \
                 ( owner['userid'], owner['username'] )

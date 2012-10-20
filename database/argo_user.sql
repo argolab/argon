@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS `argo_user` (
     `uid` int(11) unsigned NOT NULL auto_increment,
     `userid` varchar(20) NOT NULL,
     `passwd` varchar(60),
-    `username` varchar(20),
+    `nickname` varchar(20),
     `email` varchar(64) ,
 
     `remail` varchar(64),
@@ -43,9 +43,8 @@ CREATE TABLE IF NOT EXISTS `argo_user` (
 
     `about` text ,
     
-    `dattr` blob,
-
     PRIMARY KEY (`uid`),
     UNIQUE KEY `userid` (`userid`)
+
 ) ENGINE=InnoDB  DEFAULT CHARSET=UTF8;
 

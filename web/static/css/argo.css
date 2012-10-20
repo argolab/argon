@@ -435,8 +435,7 @@ i.unread{
 }
 
 .format-telnet{
-    white-space:pre;    
-    font-family: "文泉驿正黑", "WenQuanYi Zen Hei Mono", "Courier New 12", "宋体", monospace;
+    font-family: "文泉驿等宽正黑", "WenQuanYi Zen Hei Mono", "Courier New 12", "宋体", monospace;
 }
 
 .postquote{
@@ -500,4 +499,100 @@ a.disable:hover{
 
 .reply-form form{
     margin:2em;
+}
+
+.user-info{
+    text-align:right;
+    padding-right:2em;
+    margin-top: 2em;
+    border-right:1px dashed #aaa;
+}
+
+.user-info>div{
+    /* border-bottom:1px dashed #aaa; */
+}
+
+.user-info img{
+    width:100px;
+    height:100px;
+}
+
+.user-text{
+    margin-top: 2em;
+    padding-top: 1em;
+}
+
+.user-text h3{
+    padding:0;
+    margin:0;
+    line-height:2em;
+    font-size:1.4em;
+    margin-top:5px;
+    color:#484;
+}
+
+#user-page-wrapper{
+    background:#fcfcfc;
+    padding-bottom:40px;
+    border-radius:5px;
+    border-bottom:5px solid #ccc;
+}
+
+.ac30{
+    color:#333;
+}
+.ac31{
+    color:#f22;
+}
+.ac32{
+    color:#22c83d;
+}
+.ac33{
+    color:#e9aa20;
+}
+.ac34{
+    color:#22f;
+}
+.ac35{
+    color:#f2f;
+}
+.ac36{
+    color:#209cff;
+}
+.ac37{
+    color:#eee;
+}
+
+.ac40{
+    background-color:#333;
+}
+.ac41{
+    background-color:#f22;
+}
+.ac42{
+    background-color:#22c83d;
+}
+.ac43{
+    background-color:#e9aa20;
+}
+.ac44{
+    background-color:#22f;
+}
+.ac45{
+    background-color:#f2f;
+}
+.ac46{
+    background-color:#209cff;
+}
+.ac47{
+    background-color:#eee;
+}
+.ac1{
+    font-weight:bold;
+}
+.ac4{
+    text-decoration:underline;
+}
+.ac5{
+    text-decoration: blink;
 }

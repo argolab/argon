@@ -15,7 +15,7 @@ typedef struct _UserRec{
 	unsigned int numposts;
 	char flags[2];			/* 用到了3位, consts.h userec->flag[0] */
 	char passwd[MD5_PASSLEN];
-	char username[NICKNAMELEN + 1]; /* nick */
+	char username[NICKNAMELEN + 1]; /* nick */  /*!!!!!!!!!!!!!!!!!!!  username=>nickname */
 	char ident[NAMELEN + 1];	/*帐号注册地址 */
 
 	char termtype[16];	

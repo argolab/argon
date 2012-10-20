@@ -24,7 +24,6 @@ class UserAvatarHandler(BaseFileHandler):
         super(UserAvatarHandler, self).head('/avatar/%s'%userid)
 
     def get(self, userid, include_body=True):
-        print '*' * 20
         print os.path.join(self.root, 'avatar/%s'%userid)
         super(UserAvatarHandler, self).get('avatar/%s'%userid, include_body)
 

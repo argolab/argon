@@ -48,7 +48,6 @@ urls = [
     (r'/a/get_mail/(\d{1,4})', import_handler('mail', 'AjaxGetMailHandler')),
     (r'/a/add_mail', import_handler('mail', 'AjaxAddMailHandler')),
     (r'/a/reply_mail/(\d{1,4})', import_handler('mail', 'AjaxReplyMailHandler')),
-    (r"/a/book_board/(\w{2,16})", import_handler("board", "AjaxBookBoardHandler")),
 
     (r"/a/checkmail/?", import_handler("comm_ajax","CommAjaxCheckMailHandler")),
     (r"/a/mail/(\d{1,10})/?", import_handler("comm_ajax","CommAjaxGetMailHandler")),

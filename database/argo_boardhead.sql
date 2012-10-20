@@ -7,12 +7,7 @@ CREATE TABLE IF NOT EXISTS `argo_boardhead` (
     `bm` varchar(80),
     `flag` int(11) unsigned DEFAULT 0,
     `lastpost` int(11) NOT NULL default 0,
-    
-    -- `tp` varchar(20),
-    -- `level` int(11) unsigned default 0, */
-    -- `r_prem` int(11) unsigned DEFAULT 1, /* read permissions */
-    -- `p_prem` int(11) unsigned DEFAULT 2, /* post permissions */
-    -- `s_perm` int(11) unsigned DEFAULT 2, /* visible permissions */
+
     about varchar(80) ,
     welcome text ,
 
