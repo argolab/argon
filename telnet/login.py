@@ -115,7 +115,7 @@ class RegisterFrame(BaseFrame):
                 if passwd is False:
                     self.cancel()
                 if self.check_passwd(passwd) : 
-                    self.register(userid, passwd, registerhost=session.ip)
+                    self.register(userid, passwd)
         self.close()
 
     def check_userid(self,userid):
@@ -134,7 +134,7 @@ class RegisterFrame(BaseFrame):
         return True
         
     def register(self,userid,passwd):
-        manager.auth.register(userid,passwd,firsthost=self.session.ip)
+        manager.auth.register(userid,passwd,registerhost=self.session.ip)
         self.render('register_succ', userid=userid)
         self.pause()
         self.goto('welcome')

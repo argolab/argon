@@ -1,32 +1,16 @@
 <!DOCTYPE html>
 <html >
   <head>
-    {% include "header.html" %}
+    {% include "include/header.html" %}
+    {% block header %}{% end %}
   </head>
-  <body>
-    {% include "nav.html" %}
-    <div id="container" class="content-wrapper container">
-      <div class="row">
-        <div class="span2">
-          {% block leftsidebar %}
-          {% include "leftsidebar.html" %}
-          {% end %}
-        </div>
-        <div class="span10">
-          {% block pagehead %}{% end %}
-          {% block content %}
-          <div class="row">
-            <div class="span8">
-              {% block main %}{% end %}
-            </div>
-            <div class="span2">
-              {% block rightsidebar %}{% end %}
-            </div>
-          </div>
-          {% end %}
-        </div>
+  <body{% block bodyattr %}{% end %}>
+    <div class="g-container">
+      {% include "include/navbar.html" %}
+      <div id="main">
+        {% block main %}{% end %}
       </div>
-    </div>
-    {% include "footer.html" %}
+      {% block script %}{% end %}
+      {% include "include/footer.html" %}
   </body>
 </html>

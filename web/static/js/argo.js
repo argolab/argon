@@ -1,3 +1,19 @@
+function show_alert(messsage, type){
+    if($('#message').length)
+        return;
+    var tag = $('<div id="message">');
+    tag.html(messsage);
+    if(type){
+        tag.addClass('message-' + type);
+    }
+    tag.appendTo('body');
+    setTimeout(function(){
+        tag.fadeIn(1200, function(){
+            tag.remove();
+        });
+    }, 1000);              
+}
+
 // /********************** ²å¼þºÍÆô¶¯ ***********************/
 
 // var basic_libs = [

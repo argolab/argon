@@ -129,7 +129,7 @@ def fun_gen_quote(userid, content):
     pattern = u'\n\n【 在 %s ( %s ) 的大作中提到: 】' % \
                 ( owner['userid'], owner['nickname'] )
 
-    quote = pattern + '\n' + '\n'.join(map(lambda l: u'：'+l, content.split('\n')[:max_quote_line]))
+    quote = pattern + '\n' + '\n'.join(map(lambda l: u':'+l, content.split('\n')[:max_quote_line]))
 
     return quote
 

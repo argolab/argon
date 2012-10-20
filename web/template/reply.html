@@ -1,0 +1,47 @@
+<div id="reply-form" data-pid="{{ reply.pid }}" class="reply-form">
+  <form class="form">
+    <label>标题(回复给<a href="#post-{{ reply.pid }}">{{ reply.title }}</a>)</label>
+    <input id="input-title" type="text" class="input-xxlarge" tabindex="1"
+         name="title" value="{{ title }}"/>
+    <label>正文</label>
+    <textarea  id="input-content" class="input-xxlarge" tabindex="2"
+               rows="10" name="content">{{ content }}</textarea>
+    <label class="checkbox">
+      <input tabindx="4" id="input-replyable" name="replyable"
+             type="checkbox" checked>可以回复
+    </label>
+    <div tabindex="3" id="input-submit" class="btn btn-success">发表回复</div>
+    <span class="help-inline">Ctrl+Enter快速发文</span>
+  </form>
+</div>
+<script>
+  $('#input-content').keydown(function(event){
+      // show_alert('textarea');
+      if((event.keyCode==13)&&(event.ctrlKey)){
+          $('#input-submit').click();
+      }
+      event.stopPropagation();
+      // event.preventDefault();      
+  });
+  $('#input-submit').click(function(event){
+      var pid=$('#reply-form').attr('data-pid');
+      var title=$('#input-title').val();
+      var content=$('#input-content').val();
+      var replyable=$('#input-replyable').val();
+      $.post('/api/reply_post/' + pid,
+             {
+                 title: title,
+                 content: content,
+                 replyable: replyable,
+             },
+             function(data){
+                 if(data.success){
+                     show_alert(data.content);
+                     $('#reply-form').remove();
+                     window.location.hash = '#post-' + pid;
+                 }else{
+                     show_alert(data.content);
+                 };
+             });
+  });
+</script>

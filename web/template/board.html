@@ -1,144 +1,111 @@
-<!DOCTYPE html>
-<html >
-  <head>
-    <meta charset="utf-8">
-    <title>逸仙时空 Yat-sen Channel</title>
-    <link href="/static/css/bootstrap.css" rel="stylesheet">
-    <link href="/static/css/argo.css" rel="stylesheet">
-    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
-    <script src="/static/js/lib/jquery.js"></script>
-    <script src="/static/js/lib/bootstrap.js"></script>
-    <script src="/static/js/argo.js"></script>
-    <script src="/static/js/jquery-tmpl.js"></script>
-    <script src="/static/js/nice-time.js"></script>
-  </head>
-  <body class="board-{{ board.boardname }}" data-boardname="{{ board.boardname }}">
-    <div class="g-container">
+{% extends "base.html" %}
 
-      <div class="navbar">
-        <div class="navbar-inner">
-          <a class="brand" href="#">逸仙时空</a>
-          <div class="userbox pull-right">
-            <ul class="nav">
-              <li><a href="/user/">LTaoist</a></li>
-              <li><a href="/mail"><i class="icon-envelope"></i></a></li>
-              <li><a href="#"><i class="icon-bell"></i></a></li>            
-              <li><a href="#"><i class="icon-user"></i></a></li>            
-            </ul>
+{% block header %}
+<script src="/static/js/jquery-tmpl.js"></script>
+<script src="/static/js/nice-time.js"></script>
+{% end %}
+
+{% block bodyattr %} class="board-{{ board.boardname }}" data-boardname="{{ board.boardname }}"{% end %}
+
+{% block main %}
+<div id="board-head" class="row-fluid">
+  <div id="board-head-inner">
+    <h1>{{ board.description }} <small>{{ board.boardname }}</small></h1>
+  </div>
+</div>
+<div id="board-body">
+  <div id="board-body-inner" class="row-fluid">
+    <div id="primary" class="span9">
+      <div id="input-submit-title">
+        <form id="input-form" class="form-inline">
+          <input type="text" class="input-xlarge" id="input-cmd"
+                 tabindex="1" placeholder="说点什么..."/>
+          <button id="input-submit" tabindex="2" 
+                  class="btn btn-small btn-success">发表话题</button>
+          <div id="board-hint">
+            有问题？<a href="#"> 写信给版主 </a> 或者 <a href="#"> 寻找帮助 </a>
           </div>
-          <div id="fixed-nav">
-            <ul id="fav" class="unstyled">
-              <li><i class="icon-home"></i> <a href="/">首页</a></li>
-              <li><a href="/board/Say/">Say</a></li>
-            </ul>
-            <a id="admin-book-link" href="/board/Say/">管理收藏夹</a>
-          </div>
+        </form>
+      </div>
+      <div id="board-list">
+        <ul id="board-list-nav" class="nav nav-tabs">
+          <li id="set-default-loader"><a>讨论</a></li>
+          <li id="set-t-loader" ><a>主题</a></li>
+          <li id="set-g-loader" ><a>文摘</a></li>
+          <li id="set-m-loader"><a>美文</a></li>
+        </ul>
+        <p id="post-counter"></p>
+        <div id="board-content">
+          <table id="board-content-inner">
+            <tbody id="postlist-container">
+              {% for li in posts %}
+              {% end %}
+            </tbody>
+          </table>
+          <ul id="boardlist-nav">
+            <li id="go-first"><i class="arrow-up-bar"></i></li>
+            <li id="go-prev"><i class="arrow-up"></i></li>
+            <li id="go-next"><i class="arrow-down"></i></li>
+            <li id="go-last"><i class="arrow-down-bar"></i></li>
+          </ul>                    
         </div>
       </div>
-
-      <div id="main">
-        <div id="board-head" class="row-fluid">
-          <div id="board-head-inner">
-            <h1>{{ board.description }} <small>{{ board.boardname }}</small></h1>
-          </div>
-        </div>
-        <div id="board-body">
-          <div id="board-body-inner" class="row-fluid">
-            <div id="primary" class="span9">
-              <div id="input-submit-title">
-                <form class="form-inline">
-                  <input type="text" class="input-xlarge"
-                         placeholder="说点什么..."/>
-                  <button type="submit"
-                          class="btn btn-small btn-success">发表话题</button>
-                  <div id="board-hint">
-                    有问题？<a href="#"> 写信给版主 </a> 或者 <a href="#"> 寻找帮助 </a>
-                  </div>
-                </form>
-              </div>
-              <div id="board-list">
-                <ul id="board-list-nav" class="nav nav-tabs">
-                  <li id="set-default-loader"><a>讨论</a></li>
-                  <li id="set-t-loader" ><a>主题</a></li>
-                  <li id="set-g-loader" ><a>文摘</a></li>
-                  <li id="set-m-loader"><a>美文</a></li>
-                </ul>
-                <p id="post-counter"></p>
-                <div id="board-content">
-                  <table id="board-content-inner">
-                    <tbody id="postlist-container">
-                      {% for li in posts %}
-                      {% end %}
-                    </tbody>
-                  </table>
-                  <ul id="boardlist-nav">
-                    <li id="go-first"><i class="arrow-up-bar"></i></li>
-                    <li id="go-prev"><i class="arrow-up"></i></li>
-                    <li id="go-next"><i class="arrow-down"></i></li>
-                    <li id="go-last"><i class="arrow-down-bar"></i></li>
-                  </ul>                    
-                </div>
-              </div>
-            </div>
-
-            <div id="second" class="span3">
-
-              <div id="second-inner">
-
-                <div class="widget">
-                  <h4>版块介绍</h4>
-                  <div class="widget-content">                  
-                    Linux 是一系列类 Unix 计算机操作系统的统称。
-                    该操作系统的核心为 Linux 内核。
-                    Linux 操作系统也是软件和开放源代码发展中最著名的例子。
-                    <div class="pull-right">
-                      <button class="book-btn btn btn-mini btn-info">收藏该版</button>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="widget">
-                  <h4>版主公告</h4>
-                  <div class="widget-content">
-                    <ul class="unstyled">
-                      <li><a href="#">今天版聚</a>[2012-5-6]</li>
-                      <li><a href="#">发帖必读</a>[2012-5-6]</li>
-                      <li><a href="#">版友需知</a>[2012-5-6]</li>
-                    </ul>
-                  </div>
-                </div>
-
-              </div>
-              
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <footer id="footer">
-        &copy Life is originally a tragedy.
-      </footer>
     </div>
 
-    <script id="post-item-tpl" type="text/x-jquery-tmpl">
-      <tr>
-        <td class="tb-img">
-          <img src="/avatar/${owner}" />
-        </td>
-        <td class="tb-user">
-          <a href="/user/${owner}">${owner}</a>
-        </td>
-        <td class="tb-title">
-          <i class="${ (typeof read !='undefined')&&(read)?'read':'unread' }"></i>
-          <a href="/post/${pid}">${title}</a>
-        </td>
-        <td class="tb-time">
-          <time>${posttime}</time>
-        </td> 
-      </tr>
-    </script>
+    <div id="second" class="span3">
 
-    <script type="text/javascript">
+      <div id="second-inner">
+
+        <div class="widget">
+          <h4>版块介绍</h4>
+          <div class="widget-content">                  
+            Linux 是一系列类 Unix 计算机操作系统的统称。
+            该操作系统的核心为 Linux 内核。
+            Linux 操作系统也是软件和开放源代码发展中最著名的例子。
+            <div class="pull-right">
+              <button class="book-btn btn btn-mini btn-info">收藏该版</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="widget">
+          <h4>版主公告</h4>
+          <div class="widget-content">
+            <ul class="unstyled">
+              <li><a href="#">今天版聚</a>[2012-5-6]</li>
+              <li><a href="#">发帖必读</a>[2012-5-6]</li>
+              <li><a href="#">版友需知</a>[2012-5-6]</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+      
+    </div>
+  </div>
+</div>
+{% end %}
+    
+{% block script %}
+<script id="post-item-tpl" type="text/x-jquery-tmpl">
+  <tr>
+    <td class="tb-img">
+      <img src="/avatar/${owner}" />
+    </td>
+    <td class="tb-user">
+      <a href="/user/${owner}">${owner}</a>
+    </td>
+    <td class="tb-title">
+      <i class="${ (typeof read !='undefined')&&(read)?'read':'unread' }"></i>
+      <a href="/post/${pid}">${title}</a>
+    </td>
+    <td class="tb-time">
+      <time>${posttime}</time>
+    </td> 
+  </tr>
+</script>
+
+<script type="text/javascript">
 
       var g_tabler;
       var g_pagesize = 15;
@@ -270,40 +237,39 @@
 
           $("#set-default-loader").click();
 
+          $(".book-btn").click(function(){
+              $.get("/api/book_board",
+                    {
+                        boardname: $("body").attr('data-boardname'),
+                    },
+                    function(data){
+                        if(data.success){
+                            show_alert(data.content, "success");
+                        }
+                        else{
+                            show_alert(data.content, "danger");
+                        }
+                    });
+          });
+          
+          $('#input-form').submit(function(event){
+              submit(event);
+              event.preventDefault();
+          });
+
       });
 
-      function show_alert(messsage, type){
-          if($('#message').length)
-              return;
-          var tag = $('<div id="message">');
-          tag.html(messsage);
-          if(type){
-              tag.addClass('message-' + type);
+      function submit(event){
+          var boardname=$('body').attr('data-boardname');
+          var title=$('#input-cmd').val();
+          if(title){
+              window.location = '/post/add/' + boardname
+                  + '?title=' + title;
           }
-          tag.appendTo('body');
-          setTimeout(function(){
-              tag.fadeIn(1200, function(){
-                  tag.remove();
-              });
-          }, 1000);              
+          else{
+              window.location = '/post/add/' + boardname;
+          }
       }
-
-      $(".book-btn").click(function(){
-          $.get("/api/book_board",
-                {
-                    boardname: $("body").attr('data-boardname'),
-                },
-                function(data){
-                    if(data.success){
-                        show_alert(data.content, "success");
-                    }
-                    else{
-                        show_alert(data.content, "danger");
-                    }
-                });
-      });                    
-
-    </script>
-
-  </body>
-</html>
+               
+</script>
+{% end %}

@@ -1,8 +1,66 @@
 {% extends "base.html" %}
 
+{% block header %}
+<script src="/static/js/jquery-urlparse.js"></script>
+{% end %}
+
 {% block main %}
 <div>
-  {% module Editor(header='发表文章') %}
+  <div class="page-header">
+    <h2 class="page-title">发表新话题</h2>
+    <p>发表文章到<a href="/board/{{ boardname }}/">{{ boardname }}</a>版</p>
+  </div>
+  <div class="newpost-wrap">
+    <form class="form">
+      <label>标题</label>
+      <input id="input-title" type="text" class="input-xxlarge" tabindex="1"
+             placeholder="输入标题..." name="title"/>
+      <label>正文</label>
+      <textarea  id="input-content" class="input-xxlarge" tabindex="2"
+                 rows="20" name="content"></textarea>
+      <label class="checkbox">
+        <input tabindx="4" id="input-replyable" name="replyable"
+               type="checkbox" checked>可以回复
+      </label>
+      <div tabindex="3" data-boardname="{{ boardname }}" id="input-submit" class="btn btn-success">发表回复</div>
+  </div>
+  </form>
 </div>
 {% end %}
 
+{% block script %}
+<script>
+    (function(){
+        var boardname = $('#input-submit').attr('data-boardname');
+        var urler=$.url();
+        var title=urler.param('title');
+        if(title){
+            $('#input-title').val(title);
+            $('#input-content').focus();
+        }
+        else{
+            $('#input-title').focus();
+        }
+        $('#input-submit').click(function(){
+            var title=$('#input-title').val()
+            var content=$('#input-content').val()
+            var replyable=$('#input-replyable').val()
+            $.post('/api/new_post',
+                   {
+                       title: title,
+                       content: content,
+                       replyable: replyable,
+                       boardname: boardname,
+                   },
+                   function(data){
+                       if(data.success){
+                           window.location = '/board/' + boardname + '/';
+                       }
+                       else{
+                           show_alert(data.content);
+                       };
+                   });
+        });
+    })();
+</script>
+{% end %}

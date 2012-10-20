@@ -1,56 +1,163 @@
 {% extends "base.html" %}
 
-{% block main %}
-<div class="cell-group">
-  <a class="pull-left"  href="/board/{{ board.boardname }}/">« 回到 {{ board.boardname }} 版</a>
-  {% module PostNav(firstpid, prevpid, nextpid, lastpid, post.pid) %}
-  <div class="post-wrapper">
-    <div class="post-head">
-      <img src="{{ func.url_for_avatar(post.owner) }}"/>
+{% block header %}
+<link rel="stylesheet" href="/static/css/highlight.css">
+<script src="/static/js/showdown.js"></script>
+<script type="text/javascript" src="/static/js/highlight.js"></script>
+<script type="text/javascript" src="/static/js/telnet.js"></script>
+<script src="/static/js/jquery-tmpl.js"></script>
+<script src="/static/js/nice-time.js"></script>
+{% end %}
+
+{% block bodyattr %} class="post"{% end %}
+
+{% block script %}
+<script id="post-tpl" type="text/x-jquery-tmpl">
+  <div id="post-${pid}" class="post-wrapper">
+    <div class="post-header">
+      <img src="/avatar/${owner}"/>
       <div class="post-info">
-        <h2>{{ post.title }}</h2>
+        <h3>${title}</h3>
         <div>
-          <span> 发信人：<a href="/user/{{ post.owner }}">{{ post.owner }}</a> </span> | 
-          <span> {{ post.fromhost }} <a href="/board/{{ board.boardname }}/"><em>{{ board.boardname }}</em></a> 版 </span> | 
-          <span> <i class="icon-time"></i>{{ post.posttime }}</span> </div>
+          发信人：<a href="/user/${owner}">${owner}</a>
+          <time>${posttime}</time>
+        </div>
       </div>
     </div>
-    <div class="post-content">
-      {% raw escape(post.content).replace("\n", "<br/>\n") %}
-    </div>
-    <div class="post-sign">
-      {{ post.signature }}
-    </div>
-    <div class="post-meta">
-      <a href="/post/add/{{ post.pid }}">回复</a>
+    <div class="post-content format-telnet">${content}</div>
+    <div>
+      <ul class="meta-list">
+        <li><a href="#"><i class="icon-edit"></i></a></li>
+        <li><a href="#"><i class="icon-trash"></i></a></li>
+        <li><a href="#"><i class="icon-retweet"></i></li> |
+        <li><a class="reply-btn" data-pid="${pid}" href="javascript:void(0);"> 回复 </a></li>
+      </ul>
     </div>
   </div>
-  {% module PostNav(firstpid, prevpid, nextpid, lastpid, post.pid) %}
+</script>    
+<script>
+    (function(){ 
+        converter = new Showdown.converter();
+        $.fn.markdown = function(){
+            $(this).each(function(){
+                var self=$(this);
+                var text=self.text();
+                var html=converter.makeHtml(text);
+                self.html(html);
+            });
+        }
+    })();
+    $(document).ready(function(){
+        function appendPost(post){
+            $('#post-tpl').tmpl(post).appendTo($('#post-container'));
+            $('.format-markdown').markdown();
+            $('.format-telnet').telnet();
+            $('time').nicetime();
+            $('pre code').each(function(i, e) {hljs.highlightBlock(e)});
+            bindReplyBtn();
+        };
+        var g_next, g_prev;
+        function bindNav(next, prev){
+            g_next = next;
+            g_prev = prev;
+        }
+        function ajaxPost(pid){
+            $.get('/api/get_post',
+                  {
+                      pid: pid,
+                  },
+                  function(data){
+                      if(data.success){
+                          $('#post-container').empty();
+                          appendPost(data.post);
+                          window.location.hash = 'p' + data.post.pid;
+                          bindNav(data.nextpid, data.prevpid);
+                      }
+                      else{
+                          show_alert(data.content);
+                      };
+                  });
+        }
+        function nextAjax(){
+            if(g_next){
+                ajaxPost(g_next);
+            }else{
+                show_alert('已经是最后一篇了');
+            };
+        }
+        function prevAjax(){
+            if(g_prev){
+                ajaxPost(g_prev);
+            }
+            else{
+                show_alert('已经是第一篇了');
+            }
+        }
+        function bindReplyBtn(){
+            $('.reply-btn').click(function(){
+                $(this).each(function(){
+                    var self=$(this);
+                    var pid=self.attr('data-pid');
+                    $.get('/post/reply/' + pid,
+                          function(data){
+                              $('#editor-container').empty();
+                              $('#editor-container').append(data);
+                              $('#input-content').focus();
+                              window.location.hash = 'reply-form';
+                          });
+                });
+            });
+        }
+        $(document).keydown(function(event){
+            if((event.keyCode==40)&&event.ctrlKey){
+                var href=$('#next-btn').attr('href');
+                if(href){
+                    window.location = href;
+                }
+            }
+            if((event.keyCode==38)&&event.ctrlKey){
+                var href=$('#prev-btn').attr('href');
+                if(href){
+                    window.location = href;
+                }
+            }
+            if((event.keyCode==37)&&event.ctrlKey){
+                var boardname=$('#page-head').attr('data-boardname');
+                window.location = '/board/' + boardname + '/';
+            }
+            if((event.keyCode==82)&&event.shiftKey){
+                $('.reply-btn').click();
+            }
+        });                
+        // $('.next').click(nextAjax);
+        // $('.prev').click(prevAjax);
+        var post = {% raw json_encode(post) %};
+        appendPost(post);
+        bindNav({{ json_encode(nextpid) }}, {{ json_encode(prevpid) }});
+    });
+</script>
+{% end %}
+
+{% block main %}
+<div data-boardname="{{ board.boardname }}" id="page-head">
+  <h2>{{ board.boardname }}</h2>
+</div>
+<div id="post-wrapper" class="row-fluid">
+  <div class="span9">
+    <div class="post-nav">
+      <a href="/board/{{ board.boardname }}/">回到 {{ board.boardname }} 版</a> |
+      <a id="prev-btn" class="prev{% if prevpid is None %} disable{% end %}"{% if prevpid is not None %} href="/post/{{ prevpid }}"{% end %}>上一篇</a>
+      <a id="next-btn" class="next{% if nextpid is None %} disable{% end %}"{% if nextpid is not None %} href="/post/{{ nextpid }}"{% end %}>下一篇</a>
+    </div>
+    <div id="post-container" class="post-container">
+    </div>
+    <div class="post-nav">
+      <a href="/board/{{ board.boardname }}/">回到 {{ board.boardname }} 版</a> |
+      <a class="prev{% if prevpid is None %} disable{% end %}"{% if prevpid is not None %} href="/post/{{ prevpid }}"{% end %}>上一篇</a>
+      <a class="next{% if nextpid is None %} disable{% end %}"{% if nextpid is not None %} href="/post/{{ nextpid }}"{% end %}>下一篇</a>
+    </div>
+    <div id="editor-container"></div>
+  </div>
 </div>
 {% end %}
 
-{% block rightsidebar %}
-<div class="cell">
-  {% if parent %}
-  <h4>主题第一贴</h4>
-  <p><a href="/post/{{ root.pid }}">{{ root.title }}</a></p>
-  <h4>回复的原文</h4>
-  <p><a href="/post/{{ parent.pid }}">{{ parent.title }}</a></p>
-  {% else %}
-  <h4>本文是主题第一贴！</h4>
-  <a href="#"> >> 同主题阅读</a>
-  {% end %}
-</div>
-<div class="cell">
-  <h4>本文的回复</h4>
-  {% if children %}
-  <ul>
-    {% for li in children %}
-    <li><a href="/post/{{ li.pid }}">{{ li.title }}</a></li>
-    {% end %}
-  </ul>
-  {% else %}
-  <p>没有回复，<br/>要<a href="/post/add/{{ post.pid }}">发表回复</a>吗？ </p>
-  {% end %}
-</div>
-{% end %}

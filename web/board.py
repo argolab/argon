@@ -44,7 +44,10 @@ class APIQueryBoardHandler(BaseHandler):
     def get(self, boardname):
         res = manager.board.name_and_id(boardname)
         if res is None:
-            self.fail(u'没有该版块')
+            self.write({
+                    'success': False,
+                    'content': u'没有该版块',
+                    })
             return
         boardname = res.boardname
         bid = res.bid
@@ -80,7 +83,7 @@ class APIQueryTPostBoardHandler(APIQueryBoardHandler):
 
     get_posts = manager.post.get_posts_topic
 
-class AjaxBookBoardHandler(BaseHandler):
+class APIBookBoardHandler(BaseHandler):
 
     def get(self):
         userid = self.get_current_user()
