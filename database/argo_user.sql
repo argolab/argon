@@ -3,18 +3,18 @@ CREATE TABLE IF NOT EXISTS `argo_user` (
     `uid` int(11) unsigned NOT NULL auto_increment,
     `userid` varchar(20) NOT NULL,
     `passwd` varchar(60),
-    `nickname` varchar(20),
-    `email` varchar(80) ,
+    `username` varchar(20),
+    `email` varchar(64) ,
 
-    `remail` varchar(80),
-    `netid`  varchar(20),
-    
+    `remail` varchar(64),
+    `netid`  varchar(64),
+
     `iconidx` varchar(32),
 
     `bgidx` varchar(32),
 
     -- `register` datetime NOT NULL default CURRENT_TIMESTAMP,
-    `registerhost` varchar(20),
+    -- `registerhost` varchar(20),
     `firstlogin` datetime NOT NULL default '1970-01-01 00:00:00',
     `firsthost` varchar(20),
     `lastlogin` datetime NOT NULL default '1970-01-01 00:00:00',
@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS `argo_user` (
     `lastupdate` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
 
     `birthday` date NOT NULL default '1990-01-01',
-    `address` varchar(50), 
+    `address` varchar(128), 
     `usertitle` varchar(20) NOT NULL default 'user',
     `gender`  int(11) unsigned default 1,
     `realname` varchar(20),

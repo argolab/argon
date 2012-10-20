@@ -28,7 +28,7 @@ class CommAjaxGetPostHandler(BaseHandler):
                     v = str(v)
                 except:
                     pass
-                result[k] = self.xhtml_escape(v)
+                result[k] = self.escape.xhtml_escape(v)
         else:
             result['content'] = u'本帖子不存在或者已被删除'
 
@@ -63,7 +63,7 @@ class CommAjaxGetQuoteHandler(BaseHandler):
         content = post['content']
         result['success'] = True
         result['_xsrf'] = self.xsrf_token
-        result['content'] = self.xhtml_escape(quote)
+        result['content'] = self.escape.xhtml_escape(quote)
         self.write(result)
 
 class CommAjaxNewPostHandler(BaseHandler):
@@ -113,7 +113,7 @@ class CommAjaxGetMailHandler(BaseHandler):
                     v = str(v)
                 except:
                     pass
-                result[k] = self.xhtml_escape(v)
+                result[k] = self.escape.xhtml_escape(v)
         else: 
             result['success'] = False 
             result['content'] = u'本帖子不存在或者已被删除'

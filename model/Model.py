@@ -3,7 +3,7 @@
 
 from globaldb import global_conn,global_cache
 from MySQLdb import ProgrammingError
-import bcrypt,time
+import bcrypt,time,hashlib
 from datetime import datetime
 import random
 # import perm
@@ -1314,7 +1314,7 @@ class UserAuth(Model):
 
     using mod:  userinfo, status, userperm
     '''
-    
+    ENC_LEVEL = 10
     ban_userid = ['guest','new']
     GUEST = AuthUser(userid='guest',is_first_login=None)
 
@@ -1325,17 +1325,35 @@ class UserAuth(Model):
         self.userperm = manager.get_module('userperm')
         self.favourite = manager.get_module('favourite')
         self.team = manager.get_module('team')
-        
-    def gen_passwd(self,passwd):
-        return bcrypt.hashpw(passwd, bcrypt.gensalt(10))
+
+    def gen_passwd(self, userid, passwd, code = bcrypt.gensalt(ENC_LEVEL)):
+        '''
+        Use the algorithm derived from the pass.c in the old argo source code.
+        First hash the plain passwd to the hexdigest of md5 which is the
+        same format as in the .PASSWDS using the algorithm below.
+        Then use bcrypt to encrypt the hexdigest of md5 code.
+        '''
+
+        magic = " #r3:`>/CH'M&p%<xCj?bqd=/?L7o:N.s;j}Ouo!--PhX j^icU3aX{]?7`<(jOt"
+        md5code = hashlib.md5(magic)
+        md5code.update(passwd)
+        md5code.update(magic)
+        md5code.update(userid)
+        digest = md5code.hexdigest()
+
+        # The first byte is 0. So the first two char of hexdigest will be 0 as well.
+        digest = '00' + digest[2:]
+
+        return bcrypt.hashpw(digest, code)
 
     def set_passwd(self, userid, passwd):
-        self.userinfo.update_user(userid, passwd=self.gen_passwd(passwd))
+        self.userinfo.update_user(userid, passwd=self.gen_passwd(userid, passwd))
 
-    def check_passwd_match(self,passwd,code):
+    def check_passwd_match(self, userid, passwd,code):
         try:
-            return bcrypt.hashpw(passwd, code) == code
-        except:
+            return self.gen_passwd(userid, passwd, code) == code
+        except Exception as e:
+            print e
             return False
 
     def user_exists(self,userid):
@@ -1355,13 +1373,13 @@ class UserAuth(Model):
     def register(self, userid, passwd, **kwargs):
         self.userinfo.add_user(
             userid=userid,
-            passwd=self.gen_passwd(passwd),
+            passwd=self.gen_passwd(userid, passwd),
             nickname=userid,
             **kwargs
             )
         self.favourite.init_user_favourite(userid)
         self.userperm.init_user_team(userid)
-        
+
     def get_guest(self):
         return self.GUEST
 
@@ -1370,9 +1388,10 @@ class UserAuth(Model):
         code = self.userinfo.select_attr(userid, "userid, passwd")
         if code is None:
             raise LoginError(u'没有该用户!')
+        userid = code['userid']
         code = code['passwd']
 
-        if not self.check_passwd_match(passwd, code):
+        if not self.check_passwd_match(userid, passwd, code):
             raise LoginError(u'账号和密码不匹配！')
 
         self.userinfo.update_user(userid,
@@ -1387,13 +1406,15 @@ class UserAuth(Model):
             raise LoginError(LoginError.NO_SUCH_USER) # Not such user self.get_guest()
 
         # user_exist
-        code = self.userinfo.select_attr(userid,"passwd")
+        # Be careful of the lower and upper case of userid.
+        code = self.userinfo.select_attr(userid,"userid, passwd")
         if code is None :
             raise LoginError(u'没有该用户！')
+        userid = code['userid']
         code = code['passwd']
 
         #check_password
-        if not self.check_passwd_match(passwd,code):
+        if not self.check_passwd_match(userid, passwd,code):
             raise LoginError(u'帐号和密码不匹配！')
         self.userinfo.update_user(userid,
                                lasthost=host,

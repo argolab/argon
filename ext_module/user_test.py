@@ -20,8 +20,8 @@ def main_test():
                     if not i.startswith('__'):
                         print i, getattr(user, i)
                 break
-            if user.passwd and user.passwd[0] != '\0':
-                print user.userid, user.GetPasswd(), user.passwd, user.GetRealname().decode('gbk'), user.lastlogin, user.email
+            #if user.passwd and user.passwd[0] != '\0':
+            #    print user.userid, user.GetPasswd(), user.passwd, user.GetRealname().decode('gbk'), user.lastlogin, user.email
         except AttributeError, e:
             print e
             break
@@ -32,7 +32,8 @@ if __name__ == '__main__':
     1. 如果urec.passwd[0] == 0:
         使用DES加密方式
     2. 否则用md5:
-        其中使用magic ＝ " #r3:`>/ch'm&p%<xcj?bqd=/?l7o:n.s;j}ouo!--phx j^icu3ax{]?7`<(jot"
+        其中使用
+        magic =" #r3:`>/CH'M&p%<xCj?bqd=/?L7o:N.s;j}Ouo!--PhX j^icU3aX{]?7`<(jOt"
         加密步骤如下：
         a = md5(magic)
         a.update(passwd)
@@ -43,19 +44,15 @@ if __name__ == '__main__':
             这里的userid的大小写要严格按照urec.userid来进行，否则会导致md5结果不正确。
     """
     main_test()
-    #userid = ''
-    #passwd = ''
-    #magic = " #r3:`>/CH'M&p%<xCj?bqd=/?L7o:N.s;j}Ouo!--PhX j^icU3aX{]?7`<(jOt"
+    userid = 'Cypress'
+    passwd = ''
 
-
-    #a = md5(magic)
-    #a.update(passwd)
-    #a.update(magic)
-    #a.update(userid)
-    #print a.hexdigest()
-    #des = ext_user.GenPasswdDes('cling', 'clRBnz3IwFo.g')
-    #print des
-    passwd = 'lfDw4/BUOkEbI'
-    word = 'asd'
-    print ext_user.GenPasswdDes(passwd, word)
+    print ext_user.GenPasswdMd5(userid, passwd)
+    magic=" #r3:`>/CH'M&p%<xCj?bqd=/?L7o:N.s;j}Ouo!--PhX j^icU3aX{]?7`<(jOt"
+    a = md5()
+    a.update(magic)
+    a.update(passwd)
+    a.update(magic)
+    a.update(userid)
+    print a.hexdigest()
 

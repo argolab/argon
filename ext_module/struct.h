@@ -29,7 +29,7 @@ $Id: struct.h,v 1.15 2008-08-28 17:09:15 freestyler Exp $
 */
 struct userec {			/* Structure used to hold information in */
 	char userid[IDLEN + 2];	/* PASSFILE */
-	time_t firstlogin;
+	unsigned int firstlogin;
 	char lasthost[16];	/* 上一次登录地址 */
 	unsigned int numlogins;
 	unsigned int numposts;
@@ -43,21 +43,21 @@ struct userec {			/* Structure used to hold information in */
 	unsigned int userlevel;   	/* 用户权限 */
 	unsigned char usertitle;  	/* 称号 */
 	unsigned char reserved[7];
-	time_t lastlogin;
-	time_t lastlogout;	  	
-	time_t stay;
+	unsigned int lastlogin;
+	unsigned int lastlogout;	  	
+	unsigned int stay;
 	char realname[NAMELEN + 1];
 	char address[STRLEN];
 	char email[STRLEN - 12];
 	unsigned int nummails;
-	time_t lastjustify;
+	unsigned int lastjustify;
 	char gender;
 	unsigned char birthyear;
 	unsigned char birthmonth;
 	unsigned char birthday;
 	int signature;
 	unsigned int userdefine;	/* 个人设定参数 */
-	time_t notedate;		/* no use currently */
+	int notedate;		/* no use currently */
 	int noteline;			/* 进站时已阅读notepad noteline行了 */
 };
 
@@ -101,7 +101,7 @@ struct fileheader {
 	unsigned int flag;
 	unsigned int size;
 	unsigned int id;  			// identity of article (per thread)
-	time_t filetime;
+	unsigned int filetime;
 	char reserved[12];
 };
 
@@ -109,11 +109,11 @@ struct boardheader {
 	char filename[BFNAMELEN];
 	char title[BTITLELEN];
 	char BM[BMLEN];
-	unsigned flag;		/* 版面属性 */
-	unsigned level;		/* read/post权限 */
-	unsigned lastpost;	/* lastpost time */
-	unsigned total; 	/* 文章数 */
-	unsigned parent;	/* parent board ID */
+	unsigned int flag;		/* 版面属性 */
+	unsigned int level;		/* read/post权限 */
+	unsigned int lastpost;	/* lastpost time */
+	unsigned int total; 	/* 文章数 */
+	unsigned int parent;	/* parent board ID */
 	unsigned int total_today;
 	unsigned char reserved[4];
 };

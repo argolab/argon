@@ -2,14 +2,14 @@
 #include <Python.h> 
 #include <structmember.h>
 #include <fcntl.h>
-#include "consts.h" 
-#include "struct.h"
+#include "libbbs.h"
+#include "libsys.h"
 
 typedef struct _UserRec{
     PyObject_HEAD
 
 	char userid[IDLEN + 2];	/* PASSFILE */
-	time_t firstlogin;
+	unsigned int firstlogin;
 	char lasthost[16];	/* 上一次登录地址 */
 	unsigned int numlogins;
 	unsigned int numposts;
@@ -23,27 +23,27 @@ typedef struct _UserRec{
 	unsigned int userlevel;   	/* 用户权限 */
 	unsigned char usertitle;  	/* 称号 */
 	unsigned char reserved[7];
-	time_t lastlogin;
-	time_t lastlogout;	  	
-	time_t stay;
+	unsigned int lastlogin;
+	unsigned int lastlogout;	  	
+	unsigned int stay;
 	char realname[NAMELEN + 1];
 	char address[STRLEN];
 	char email[STRLEN - 12];
 	unsigned int nummails;
-	time_t lastjustify;
+	unsigned int lastjustify;
 	char gender;
 	unsigned char birthyear;
 	unsigned char birthmonth;
 	unsigned char birthday;
 	int signature;
 	unsigned int userdefine;	/* 个人设定参数 */
-	time_t notedate;		/* no use currently */
+	int notedate;		/* no use currently */
 	int noteline;			/* 进站时已阅读notepad noteline行了 */
 }UserRec;
 
 static PyMemberDef UserRecMember[] = {
     {"userid", T_STRING_INPLACE, offsetof(UserRec, userid), 0, "" },
-    {"firstlogin", T_LONG, offsetof( UserRec, firstlogin ), 0, ""}, 
+    {"firstlogin", T_UINT, offsetof( UserRec, firstlogin ), 0, ""}, 
     {"lasthost",  T_STRING_INPLACE, offsetof( UserRec, lasthost ), 0, ""}, 
     {"numlogins", T_UINT, offsetof( UserRec, numlogins ), 0, ""}, 
     {"numposts", T_UINT , offsetof( UserRec,  numposts), 0, ""}, 
@@ -51,48 +51,60 @@ static PyMemberDef UserRecMember[] = {
     {"passwd", T_STRING_INPLACE, offsetof( UserRec,  passwd), 0, ""}, 
     {"username", T_STRING_INPLACE, offsetof( UserRec, username ), 0, ""}, 
     {"ident", T_STRING_INPLACE, offsetof( UserRec, ident ), 0, ""}, 
-  //  {"termtype", T_STRING_INPLACE , offsetof( UserRec, termtype ), 0, ""}, 
+//  {"termtype", T_STRING_INPLACE , offsetof( UserRec, termtype ), 0, ""}, 
     {"reginfo", T_STRING_INPLACE, offsetof( UserRec, reginfo ), 0, ""}, 
     {"userlevel", T_UINT, offsetof( UserRec, userlevel ), 0, ""}, 
     {"usertitle", T_UBYTE, offsetof( UserRec, usertitle ), 0, ""}, 
-//    {"reserved", T_STRING_INPLACE, offsetof( UserRec, reserved ), 0, ""}, 
-    {"lastlogin", T_LONG, offsetof( UserRec, lastlogin ), 0, ""}, 
-    {"lastlogout", T_LONG, offsetof( UserRec, lastlogout ), 0, ""}, 
-    {"stay", T_LONG, offsetof( UserRec, stay ), 0, ""}, 
+//  {"reserved", T_STRING_INPLACE, offsetof( UserRec, reserved ), 0, ""}, 
+    {"lastlogin", T_UINT, offsetof( UserRec, lastlogin ), 0, ""}, 
+    {"lastlogout", T_UINT, offsetof( UserRec, lastlogout ), 0, ""}, 
+    {"stay", T_UINT, offsetof( UserRec, stay ), 0, ""}, 
     {"realname", T_STRING_INPLACE, offsetof( UserRec, realname ), 0, ""}, 
     {"address", T_STRING_INPLACE, offsetof( UserRec, address ), 0, ""}, 
     {"email", T_STRING_INPLACE, offsetof( UserRec, email ), 0, ""}, 
     {"nummails", T_UINT, offsetof( UserRec, nummails), 0, ""}, 
-//    {"lastjustify", T_LONG, offsetof( UserRec, lastjustify ), 0, ""}, 
+//  {"lastjustify", T_INT, offsetof( UserRec, lastjustify ), 0, ""}, 
     {"gender", T_CHAR, offsetof( UserRec, gender), 0, ""}, 
     {"birthyear", T_UBYTE, offsetof( UserRec, birthyear), 0, ""}, 
     {"birthmonth", T_UBYTE, offsetof( UserRec, birthmonth), 0, ""}, 
     {"birthday", T_UBYTE, offsetof( UserRec, birthday), 0, ""}, 
-//    {"signature", T_INT, offsetof( UserRec, signature), 0, ""}, 
+//  {"signature", T_, offsetof( UserRec, signature), 0, ""}, 
     {"userdefine", T_UINT, offsetof( UserRec, userdefine), 0, ""}, 
-//    {"notedate", , offsetof( UserRec, ), 0, ""}, 
-    {"noteline", T_INT, offsetof( UserRec, noteline), 0, ""}, 
-    {NULL},
+//  {"notedate", , offsetof( UserRec, ), 0, ""}, 
+    {"noteline", T_UINT, offsetof( UserRec, noteline), 0, ""}, 
+    {NULL}
 };
+
 
 static PyObject * UserRec_GetAddress(UserRec *self) 
 {
     return PyString_FromStringAndSize(self->address, strlen(self->address));
 }
 
+static void _HexDigest(const char *passwd, int passwdlen, char *digest)
+{
+    static const char ttb[] = "0123456789abcdef";
+
+    int i;
+    for ( i = 0; i < passwdlen; i++ )
+    {
+        digest[i*2] = ttb[(passwd[i] >> 4) & 15];
+        digest[i*2+1] = ttb[passwd[i] & 15];
+    }
+    digest[ passwdlen * 2] = '\0';
+
+}
 static PyObject * UserRec_GetPasswd( UserRec *self )
 {
     // Need to transfer binary stream to hex representation
-    static const char ttb[] = "0123456789abcdef";
-
-    char buf[64];
-    int i;
-    for ( i = 0; i < sizeof(self->passwd); i++ )
-    {
-        buf[i*2] = ttb[self->passwd[i] >> 4];
-        buf[i*2+1] = ttb[self->passwd[i] & 15];
+    if (self->passwd[0]) {
+        // For old encryption crypt_des
+        return PyString_FromString( self->passwd);
     }
-    buf[ sizeof(self->passwd) * 2] = '\0';
+    // For md5
+    char buf[64];
+    memset(buf, 0, sizeof(buf));
+    _HexDigest(self->passwd, sizeof(self->passwd), buf);
     return PyString_FromStringAndSize( buf, 2 * sizeof(self->passwd));
 }
 
@@ -107,11 +119,11 @@ static PyObject * UserRec_GetRealname( UserRec *self )
 }
 
 static PyMethodDef UserRecMethods[] = {
-    { "GetPasswd", (PyCFunction)UserRec_GetPasswd, METH_NOARGS},
-    { "GetAddress", (PyCFunction)UserRec_GetAddress, METH_NOARGS},
-    { "GetUsername", (PyCFunction)UserRec_GetUsername, METH_NOARGS},
-    { "GetRealname", (PyCFunction)UserRec_GetRealname, METH_NOARGS},
-    {NULL}
+    { "GetPasswd", (PyCFunction)UserRec_GetPasswd, METH_NOARGS },
+    { "GetAddress", (PyCFunction)UserRec_GetAddress, METH_NOARGS },
+    { "GetUsername", (PyCFunction)UserRec_GetUsername, METH_NOARGS },
+    { "GetRealname", (PyCFunction)UserRec_GetRealname, METH_NOARGS },
+    {NULL }
 };
 
 
@@ -180,10 +192,6 @@ static PyObject* Convert2Object(struct userec *ptUrec)
     memcpy(ptObj->realname, ptUrec->realname, sizeof( ptUrec->realname )); 
     memcpy(ptObj->address, ptUrec->address, sizeof( ptUrec->address )); 
 
-    FILE *fp = fopen("address.txt", "w");
-    fprintf( fp, "%s\n", ptObj->address );
-    fclose(fp);
-
     memcpy(ptObj->email, ptUrec->email, sizeof( ptUrec->email )); 
     ptObj->nummails= ptUrec->nummails;
     ptObj->gender= ptUrec->gender;
@@ -232,9 +240,35 @@ static PyObject * user_GetUserRec(PyObject *self, PyObject *args)
     return retObj;
 }
 
+static PyObject * user_GenPasswdMd5(PyObject *self, PyObject *args)
+{
+    const char *userid, *passwd;
+    if ( !PyArg_ParseTuple(args, "ss", &userid, &passwd) ) {
+        return  0; 
+    }
+    
+    char md5passwd[32], digestpasswd[64];
+    igenpass(passwd, userid, md5passwd);
+    _HexDigest(md5passwd, 16, digestpasswd);
+    return PyString_FromString(digestpasswd);
+}
+
+static PyObject * user_GenPasswdDes(PyObject *self, PyObject *args)
+{
+    const char *passwd, *trypasswd;
+    static char pwbuf[DES_PASSLEN]; 
+    char *pw;
+    if ( !PyArg_ParseTuple( args, "ss", &passwd, &trypasswd ) )
+    strlcpy(pwbuf, trypasswd, DES_PASSLEN);
+    pw = crypt_des(pwbuf, (char*) passwd);
+    return PyString_FromString( pw );
+}
+
 static PyMethodDef module_methods[] = {
     { "GetUserRec", (PyCFunction)user_GetUserRec, METH_VARARGS, 
-        "The first argument is the .PASSWDS file. Second argument represent the num(order) of the record." },
+        "GetUserRec(recfile, num) \n The first argument is the .PASSWDS file. Second argument represent the num(order) of the record to get." },
+    {"GenPasswdMd5", (PyCFunction)user_GenPasswdMd5, METH_VARARGS, "GenPasswdMd5(userid, passwd) \nGenerate md5 passwds using argo's algorithm."},
+    {"GenPasswdDes", (PyCFunction)user_GenPasswdDes, METH_VARARGS, "GenPasswdDes(passwd, trypasswd) \nGenerate Des encryption."},
     {NULL}
 };
 

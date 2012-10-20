@@ -30,9 +30,9 @@ class LoginHandler(BaseHandler):
             self.write(e.message)
             self.finish()
         else:
-            print repr(userid)
+            #print repr(userid)
             self.set_secure_cookie('userid', userid)
-        self.redirect('/')
+            self.redirect('/')
 
 class LogoutHandler(BaseHandler):
 
